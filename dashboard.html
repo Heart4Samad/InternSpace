@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternSpace - Onboarding Central</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">🚀 InternSpace</div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html" class="active">Onboarding Hub</a></li>
+            <li><a href="kanban.html">Agile Kanban Board</a></li>
+            <li><button id="logoutBtn" class="logout-link">Sign Out</button></li>
+        </ul>
+    </nav>
+
+    <div class="app-container">
+        <header class="page-header">
+            <h1>Welcome Back, <span id="userGreeting" class="gold-glow">Intern</span>!</h1>
+            <p>Complete your vital operational tasks below to fulfill corporate clearance status.</p>
+        </header>
+
+        <section class="metric-card">
+            <h3>Corporate Compliance Metric</h3>
+            <div class="progress-bar-container">
+                <div id="onboardingProgress" class="progress-fill" style="width: 0%;"></div>
+            </div>
+            <p id="progressText" class="metric-subtext">0% Clearance Achieved</p>
+        </section>
+
+        <section class="content-card">
+            <h2>Essential Corporate Checklist</h2>
+            <p class="section-desc">Click task boxes to mark processing progress points.</p>
+            
+            <div class="checklist-group">
+                <label class="checklist-item">
+                    <input type="checkbox" class="onboard-check" data-id="t1">
+                    <div class="item-details">
+                        <strong>1. Complete HR Onboarding Documentation</strong>
+                        <span>Submit signed work agreements, credentials, and bank account configurations.</span>
+                    </div>
+                </label>
+
+                <label class="checklist-item">
+                    <input type="checkbox" class="onboard-check" data-id="t2">
+                    <div class="item-details">
+                        <strong>2. Provision IT Workspace & IDE Setup</strong>
+                        <span>Install text editors, set system environment paths, and generate secure RSA tokens.</span>
+                    </div>
+                </label>
+
+                <label class="checklist-item">
+                    <input type="checkbox" class="onboard-check" data-id="t3">
+                    <div class="item-details">
+                        <strong>3. Sync with Designated Department Mentor</strong>
+                        <span>Book an introductory session call to outline individual contribution expectations.</span>
+                    </div>
+                </label>
+
+                <label class="checklist-item">
+                    <input type="checkbox" class="onboard-check" data-id="t4">
+                    <div class="item-details">
+                        <strong>4. Clone Main Branch Source Code Repositories</strong>
+                        <span>Establish connection mappings to local systems and check primary codebase runs.</span>
+                    </div>
+                </label>
+
+                <label class="checklist-item">
+                    <input type="checkbox" class="onboard-check" data-id="t5">
+                    <div class="item-details">
+                        <strong>5. Review Enterprise Data Protection Standard Policies</strong>
+                        <span>Read corporate safety documentation guidelines regarding asset and software protections.</span>
+                    </div>
+                </label>
+
+                <label class="checklist-item">
+                    <input type="checkbox" class="onboard-check" data-id="t6">
+                    <div class="item-details">
+                        <strong>6. Attend the Week-1 Product Sprint Briefing</strong>
+                        <span>Join the weekly team project scrum sync to log specific pipeline backlogs.</span>
+                    </div>
+                </label>
+
+                <label class="checklist-item">
+                    <input type="checkbox" class="onboard-check" data-id="t7">
+                    <div class="item-details">
+                        <strong>7. Submit Initial Workspace Setup Evaluation Report</strong>
+                        <span>Compile confirmation signatures and files indicating structural onboarding tasks are complete.</span>
+                    </div>
+                </label>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

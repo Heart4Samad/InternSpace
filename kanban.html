@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternSpace - Sprint Pipeline</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">🚀 InternSpace</div>
+        <ul class="nav-links">
+            <li><a href="dashboard.html">Onboarding Hub</a></li>
+            <li><a href="kanban.html" class="active">Agile Kanban Board</a></li>
+            <li><button id="logoutBtn2" class="logout-link">Sign Out</button></li>
+        </ul>
+    </nav>
+
+    <div class="app-container">
+        <header class="page-header">
+            <h1>Sprint Kanban Workspace</h1>
+            <p>Manage individual software updates. Create backlogs and monitor pipeline flow.</p>
+        </header>
+
+        <section class="content-card">
+            <h2>Add New Sprint Feature Target</h2>
+            <form id="kanbanForm" class="inline-form">
+                <input type="text" id="taskTitle" placeholder="Task summary details..." required>
+                <select id="taskPriority">
+                    <option value="Low">Low Priority</option>
+                    <option value="Medium" selected>Medium Priority</option>
+                    <option value="High">High Priority</option>
+                </select>
+                <button type="submit" class="gold-btn">Inject Task</button>
+            </form>
+        </section>
+
+        <div class="kanban-board">
+            <div class="kanban-column">
+                <div class="column-header status-todo">📋 Project Backlog</div>
+                <div id="todoContainer" class="task-slot"></div>
+            </div>
+
+            <div class="kanban-column">
+                <div class="column-header status-doing">⚡ Active Sprint</div>
+                <div id="doingContainer" class="task-slot"></div>
+            </div>
+
+            <div class="kanban-column">
+                <div class="column-header status-done">✔ QA Cleared</div>
+                <div id="doneContainer" class="task-slot"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

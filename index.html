@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternSpace - Portal Entry</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body class="auth-body">
+
+    <!-- CINEMATIC NEON SPLASH SCREEN OVERLAY -->
+    <div id="splashScreen" class="splash-overlay">
+        <div class="lamp-container">
+            <div id="lampBulb" class="lamp-bulb">💡</div>
+            <div id="lampSwitch" class="lamp-switch">
+                <div class="switch-line"></div>
+                <div id="switchNode" class="switch-node"></div>
+            </div>
+            <p id="actionHint" class="drag-hint">👇 Drag Gold Switch Down to Power System</p>
+        </div>
+    </div>
+
+    <!-- INSTALLATION ALERT NOTIFICATION BANNER -->
+    <div class="install-banner">
+        <span>📱 Accessing offline? For native mobile optimization and instant download capabilities:</span>
+        <button onclick="alert('To install: Open your browser menu and tap Add to Home Screen')" class="install-btn">Install App</button>
+    </div>
+
+    <!-- MAIN ACCESS GATEWAY CARD -->
+    <div class="auth-card" id="mainAuthCard">
+        <div class="auth-logo">🚀 InternSpace</div>
+        <h2>Workspace Access</h2>
+        <p class="auth-subtitle">Log in to sync your onboarding checklist & sprint analytics</p>
+        
+        <div id="loginError" class="alert-box" style="display: none;">❌ Invalid user login credentials.</div>
+
+        <form id="loginForm">
+            <label for="loginEmail">Corporate Email:</label>
+            <input type="email" id="loginEmail" placeholder="intern@company.com" required>
+
+            <label for="loginPassword">Security Password:</label>
+            <input type="password" id="loginPassword" placeholder="••••••••" required>
+
+            <button type="submit" class="gold-btn btn-block">Authenticate Credentials</button>
+        </form>
+        
+        <div class="auth-footer">
+            Don't have an account? <a href="register.html" class="gold-link">Register Profile here</a>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

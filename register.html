@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternSpace - Join the Workspace</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body class="auth-body">
+
+    <div class="install-banner">
+        <span>📱 Accessing offline? For native mobile optimization and instant download capabilities:</span>
+        <button onclick="alert('To install: Open your browser menu and tap Add to Home Screen')" class="install-btn">Install App</button>
+    </div>
+
+    <div class="auth-card">
+        <div class="auth-logo">🚀 InternSpace</div>
+        <h2>Create Corporate Profile</h2>
+        <p class="auth-subtitle">Register your browser profile to deploy the sprint engine</p>
+        
+        <form id="registerForm">
+            <label for="regName">Full Name:</label>
+            <input type="text" id="regName" placeholder="e.g., John Doe" required>
+
+            <label for="regEmail">Corporate Email:</label>
+            <input type="email" id="regEmail" placeholder="e.g., intern@company.com" required>
+
+            <label for="regPassword">Security Password:</label>
+            <input type="password" id="regPassword" placeholder="••••••••" required>
+
+            <button type="submit" class="gold-btn btn-block">Initialize Account</button>
+        </form>
+        
+        <div class="auth-footer">
+            Already have a profile? <a href="index.html" class="gold-link">Access Workspace</a>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
