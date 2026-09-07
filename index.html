@@ -24,29 +24,62 @@
     <!-- INSTALLATION ALERT NOTIFICATION BANNER -->
     <div class="install-banner">
         <span>📱 Accessing offline? For native mobile optimization and instant download capabilities:</span>
-        <button onclick="alert('To install: Open your browser menu and tap Add to Home Screen')" class="install-btn">Install App</button>
+        <button onclick="triggerPWAInstall()" class="install-btn">Install App</button>
     </div>
+
 
     <!-- MAIN ACCESS GATEWAY CARD -->
     <div class="auth-card" id="mainAuthCard">
         <div class="auth-logo">🚀 InternSpace</div>
-        <h2>Workspace Access</h2>
-        <p class="auth-subtitle">Log in to sync your onboarding checklist & sprint analytics</p>
         
-        <div id="loginError" class="alert-box" style="display: none;">❌ Invalid user login credentials.</div>
+        <!-- Standard Login Mode -->
+        <div id="loginView">
+            <h2>Workspace Access</h2>
+            <p class="auth-subtitle">Log in to sync your onboarding checklist & sprint analytics</p>
+            
+            <div id="loginError" class="alert-box" style="display: none;">❌ Invalid user login credentials.</div>
 
-        <form id="loginForm">
-            <label for="loginEmail">Corporate Email:</label>
-            <input type="email" id="loginEmail" placeholder="intern@company.com" required>
+            <form id="loginForm">
+                <label for="loginEmail">Corporate Email:</label>
+                <input type="email" id="loginEmail" placeholder="intern@company.com" required>
 
-            <label for="loginPassword">Security Password:</label>
-            <input type="password" id="loginPassword" placeholder="••••••••" required>
+                <label for="loginPassword">Security Password:</label>
+                <input type="password" id="loginPassword" placeholder="••••••••" required>
 
-            <button type="submit" class="gold-btn btn-block">Authenticate Credentials</button>
-        </form>
-        
-        <div class="auth-footer">
-            Don't have an account? <a href="register.html" class="gold-link">Register Profile here</a>
+                <!-- Remember Me & Forgot Password Flex Block -->
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMeLogin"> Remember Me
+                    </label>
+                    <a href="#" id="forgotPasswordLink" class="gold-link small-text">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="gold-btn btn-block">Authenticate Credentials</button>
+            </form>
+            
+            <div class="auth-footer">
+                Don't have an account? <a href="register.html" class="gold-link">Register Profile here</a>
+            </div>
+        </div>
+
+        <!-- Hidden Forgot Password Reset Mode -->
+        <div id="resetView" style="display: none;">
+            <h2>Reset Security Profile</h2>
+            <p class="auth-subtitle">Enter your registered email to inject a new password</p>
+            
+            <form id="forgotPasswordForm">
+                <label for="resetEmail">Registered Corporate Email:</label>
+                <input type="email" id="resetEmail" placeholder="intern@company.com" required>
+
+                <label for="newPassword">New Security Password:</label>
+                <input type="password" id="newPassword" placeholder="••••••••" required>
+
+                <button type="submit" class="gold-btn btn-block">Override & Update Password</button>
+            </form>
+            
+            <div class="auth-footer">
+                Remembered your keys? <a href="#" id="backToLoginLink" class="gold-link">Back to Workspace Access</a>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>

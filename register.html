@@ -11,7 +11,7 @@
 
     <div class="install-banner">
         <span>📱 Accessing offline? For native mobile optimization and instant download capabilities:</span>
-        <button onclick="alert('To install: Open your browser menu and tap Add to Home Screen')" class="install-btn">Install App</button>
+        <button onclick="triggerPWAInstall()" class="install-btn">Install App</button>
     </div>
 
     <div class="auth-card">
@@ -28,6 +28,13 @@
 
             <label for="regPassword">Security Password:</label>
             <input type="password" id="regPassword" placeholder="••••••••" required>
+
+            <!-- Remember Me Block for Register Page -->
+            <div class="form-options">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="rememberMeReg"> Remember Me on this device
+                </label>
+            </div>
 
             <button type="submit" class="gold-btn btn-block">Initialize Account</button>
         </form>
