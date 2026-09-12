@@ -3,97 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InternSpace - Onboarding Central</title>
+    <title>InternSpace - Master Workspace Workspace</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-logo">🚀 InternSpace</div>
-        <ul class="nav-links">
-            <li><a href="dashboard.html" class="active">Onboarding Hub</a></li>
-            <li><a href="kanban.html">Agile Kanban Board</a></li>
-            <li><button id="logoutBtn" class="logout-link">Sign Out</button></li>
-        </ul>
-    </nav>
 
-    <div class="app-container">
-        <header class="page-header">
-            <h1>Welcome Back, <span id="userGreeting" class="gold-glow">Intern</span>!</h1>
-            <p>Complete your vital operational tasks below to fulfill corporate clearance status.</p>
-        </header>
+    <!-- GLOBAL AUDIO STATUS CONTROLLER HEADER VIEW -->
+    <header class="app-header">
+        <div class="header-branding">
+            <h2>⚡ InternSpace</h2>
+        </div>
+        <nav class="header-navigation">
+            <button onclick="switchWorkspaceView('onboarding')" class="nav-link-btn">📋 Compliance Hub</button>
+            <button onclick="switchWorkspaceView('kanban')" class="nav-link-btn">📊 Agile Kanban</button>
+            <button id="logoutBtn" class="logout-action-btn">🗑 Sign Out</button>
+        </nav>
+    </header>
 
-        <section class="metric-card">
-            <h3>Corporate Compliance Metric</h3>
-            <div class="progress-bar-container">
-                <div id="onboardingProgress" class="progress-fill" style="width: 0%;"></div>
-            </div>
-            <p id="progressText" class="metric-subtext">0% Clearance Achieved</p>
-        </section>
-
-        <section class="content-card">
-            <h2>Essential Corporate Checklist</h2>
-            <p class="section-desc">Click task boxes to mark processing progress points.</p>
-            
-            <div class="checklist-group">
-                <label class="checklist-item">
-                    <input type="checkbox" class="onboard-check" data-id="t1">
-                    <div class="item-details">
-                        <strong>1. Complete HR Onboarding Documentation</strong>
-                        <span>Submit signed work agreements, credentials, and bank account configurations.</span>
-                    </div>
-                </label>
-
-                <label class="checklist-item">
-                    <input type="checkbox" class="onboard-check" data-id="t2">
-                    <div class="item-details">
-                        <strong>2. Provision IT Workspace & IDE Setup</strong>
-                        <span>Install text editors, set system environment paths, and generate secure RSA tokens.</span>
-                    </div>
-                </label>
-
-                <label class="checklist-item">
-                    <input type="checkbox" class="onboard-check" data-id="t3">
-                    <div class="item-details">
-                        <strong>3. Sync with Designated Department Mentor</strong>
-                        <span>Book an introductory session call to outline individual contribution expectations.</span>
-                    </div>
-                </label>
-
-                <label class="checklist-item">
-                    <input type="checkbox" class="onboard-check" data-id="t4">
-                    <div class="item-details">
-                        <strong>4. Clone Main Branch Source Code Repositories</strong>
-                        <span>Establish connection mappings to local systems and check primary codebase runs.</span>
-                    </div>
-                </label>
-
-                <label class="checklist-item">
-                    <input type="checkbox" class="onboard-check" data-id="t5">
-                    <div class="item-details">
-                        <strong>5. Review Enterprise Data Protection Standard Policies</strong>
-                        <span>Read corporate safety documentation guidelines regarding asset and software protections.</span>
-                    </div>
-                </label>
-
-                <label class="checklist-item">
-                    <input type="checkbox" class="onboard-check" data-id="t6">
-                    <div class="item-details">
-                        <strong>6. Attend the Week-1 Product Sprint Briefing</strong>
-                        <span>Join the weekly team project scrum sync to log specific pipeline backlogs.</span>
-                    </div>
-                </label>
-
-                <label class="checklist-item">
-                    <input type="checkbox" class="onboard-check" data-id="t7">
-                    <div class="item-details">
-                        <strong>7. Submit Initial Workspace Setup Evaluation Report</strong>
-                        <span>Compile confirmation signatures and files indicating structural onboarding tasks are complete.</span>
-                    </div>
-                </label>
-            </div>
-        </section>
+    <!-- PWA SYSTEM BANNER DOWNLOAD -->
+    <div class="install-banner" style="display: none;">
+        <span>📱 Accessing offline? Optimize performance by installing this application locally:</span>
+        <button onclick="executeNativeApplicationInstallationTrigger()" class="install-btn">Install Workspace</button>
     </div>
+
+    <!-- MAIN OPERATIONAL LAYER VIEWS -->
+    <main class="workspace-viewport">
+
+        <!-- VIEW SECTION 1: ONBOARDING COMPLIANCE CHECKLIST -->
+        <section id="onboardingSection" class="workspace-card-panel">
+            <h3>Welcome Back, <span id="userGreeting">Intern</span>!</h3>
+            <p>Complete your regulatory baseline milestones to clear security processing metrics.</p>
+            
+            <div class="metrics-visualizer-container">
+                <div class="progress-bar-rail">
+                    <div id="onboardingProgress" class="progress-bar-fill" style="width: 0%;"></div>
+                </div>
+                <span id="progressText">0% Compliance Clearance Achieved</span>
+            </div>
+
+            <div class="checklist-items-grid">
+                <label class="check-row">
+                    <input type="checkbox" class="onboard-check" data-id="step1">
+                    <span>Initialize Security Protocol Profile</span>
+                </label>
+                <label class="check-row">
+                    <input type="checkbox" class="onboard-check" data-id="step2">
+                    <span>Synchronize Cloud Git Keys</span>
+                </label>
+                <label class="check-row">
+                    <input type="checkbox" class="onboard-check" data-id="step3">
+                    <span>Verify Live Production Netlify Build Links</span>
+                </label>
+            </div>
+        </section>
+
+        <!-- VIEW SECTION 2: AGILE KANBAN MANAGEMENT PANEL (FIXED MAIN PURPOSE) -->
+        <section id="kanbanSection" class="workspace-card-panel" style="display: none;">
+            <h3>Sprint Tasks Kanban Management Board</h3>
+            <p>Inject operational objectives and map workflow progress across compliance grids.</p>
+
+            <!-- TASK INJECTION INJECTOR FORM -->
+            <form id="kanbanForm" class="task-injection-form">
+                <div class="form-input-group">
+                    <input type="text" id="taskTitle" placeholder="Enter objective description..." required autocomplete="off">
+                </div>
+                <div class="form-input-group">
+                    <select id="taskPriority" required>
+                        <option value="" disabled selected>Select Task Priority Level</option>
+                        <option value="High">🔴 High Priority Level</option>
+                        <option value="Medium">🟡 Medium Priority Level</option>
+                        <option value="Low">🟢 Low Priority Level</option>
+                    </select>
+                </div>
+                <button type="submit" class="inject-task-btn">⚡ Inject Task Node</button>
+            </form>
+
+            <!-- KANBAN THREE OPTIONS LAYER GRID -->
+            <div class="kanban-board-grid">
+                <!-- COLUMN 1: PROJECT BACKLOG -->
+                <div class="kanban-column">
+                    <div class="column-header status-todo">📋 Project Backlog</div>
+                    <div id="todoContainer" class="task-cards-dropzone"></div>
+                </div>
+
+                <!-- COLUMN 2: ACTIVE SPRINT -->
+                <div class="kanban-column">
+                    <div class="column-header status-doing">⚡ Active Sprint</div>
+                    <div id="doingContainer" class="task-cards-dropzone"></div>
+                </div>
+
+                <!-- COLUMN 3: QA CLEARED -->
+                <div class="kanban-column">
+                    <div class="column-header status-done">✔ QA Cleared</div>
+                    <div id="doneContainer" class="task-cards-dropzone"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
 
     <script src="script.js"></script>
 </body>
