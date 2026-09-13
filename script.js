@@ -1,263 +1,223 @@
-// 1. CHOOSE THE MUSIC TRACKS
-const sounds = {
+/* ==========================================================================
+   INTERNSPACE AUDIO LAYER ENGINE
+   ========================================================================== */
+
+var audioTracks = {
     authAmbient: new Audio('audio/auth_ambient.mp3'),
     lampHum: new Audio('audio/lamp_hum.mp3'),
     switchClick: new Audio('audio/switch_click.mp3'),
     powerUp: new Audio('audio/power_up.mp3'),
     workspaceBeat: new Audio('audio/workspace_beat.mp3')
 };
-sounds.authAmbient.loop = true;
-sounds.lampHum.loop = true;
-sounds.workspaceBeat.loop = true;
 
-let deferredPrompt;
+// Configure base track dimensions and loop permissions
+audioTracks.authAmbient.loop = false;     
+audioTracks.authAmbient.volume = 0.4;
+audioTracks.lampHum.loop = true;          
+audioTracks.lampHum.volume = 0.5;
+audioTracks.workspaceBeat.loop = false;   
+audioTracks.workspaceBeat.volume = 0.3;
 
-// 2. CHOOSE THE AUTOMATIC PAGE RULES
-document.addEventListener("DOMContentLoaded", function() {
-    const user = localStorage.getItem("loggedInUser");
-    
-    // Check exactly what page the user is currently looking at
-    const isLogin = document.getElementById("loginForm") !== null;
-    const isRegister = document.getElementById("registerForm") !== null;
-    const isDashboard = document.getElementById("onboardingProgress") !== null;
-    const isKanban = document.getElementById("kanbanForm") !== null;
+// Safe assignment placeholder initialization
+var systemInstallationPrompt = null;
 
-    // RULE A: If a stranger tries to open dashboard or kanban, take them to login page
-    if (!user && (isDashboard || isKanban)) {
-        window.location.href = "index.html";
-        return;
-    }
-
-    // RULE B: If a user is already logged in, take them straight to dashboard (SKIP THE LAMP!)
-    if (user && (isLogin || isRegister)) {
-        window.location.href = "dashboard.html";
-        return;
-    }
-
-    // RULE C: Hide the dark lamp screen automatically if the user is already logged in
-    const splash = document.getElementById("splashScreen");
-    if (splash) {
-        if (user) {
-            splash.style.display = "none";
-        } else {
-            initSplashSequence(); // Start the lamp switch for new loggers
-        }
-    }
-
-    // RULE D: Play music safely
-    if (isLogin || isRegister) {
-        window.addEventListener('click', () => { sounds.authAmbient.play().catch(()=>{}); }, { once: true });
-    } else {
-        window.addEventListener('click', () => { sounds.workspaceBeat.play().catch(()=>{}); }, { once: true });
-        sounds.workspaceBeat.play().catch(() => {});
-    }
-
-    // Initialize individual page systems safely
-    if (isRegister) initRegisterLogic();
-    if (isLogin) {
-        initLoginLogic();
-        initForgotPasswordViews();
-    }
-    if (isDashboard) initDashboardHub(user);
-    if (isKanban) initKanbanSystem();
-
-    // Sign Out Button Action
-    const logoutBtn = document.getElementById("logoutBtn") || document.getElementById("logoutBtn2");
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", function(e) {
-            e.preventDefault();
-            sounds.workspaceBeat.pause();
-            localStorage.removeItem("loggedInUser");
-            window.location.href = "index.html";
-        });
-    }
+// Fixed Audio Queue Management Layer Core
+audioTracks.authAmbient.addEventListener('ended', function() {
+    audioTracks.workspaceBeat.play().catch(function() {});
+});
+audioTracks.workspaceBeat.addEventListener('ended', function() {
+    audioTracks.authAmbient.play().catch(function() {});
 });
 
-// 3. SIMPLE LIGHT SWITCH DRAG CODE (WORKS PERFECTLY ON PHONES AND LAPTOPS)
+/* ==========================================================================
+   DRAGGABLE LIGHT SWITCH SEQUENCE (TOUCH ENGINE INTEGRATED)
+   ========================================================================== */
 function initSplashSequence() {
-    const splash = document.getElementById("splashScreen");
-    const bulb = document.getElementById("lampBulb");
-    const switchNode = document.getElementById("switchNode");
-    const switchLine = document.querySelector(".switch-line");
-    const hint = document.getElementById("actionHint");
+    var switchHandleNode = document.getElementById("switchNode");
+    var switchCordLine = document.querySelector(".switch-line");
+    var lightBulbNode = document.getElementById("lampBulb");
+    var splashOverlayNode = document.getElementById("splashScreen");
+    var actionableHintNode = document.getElementById("actionHint");
 
-    if (!splash) return;
-    window.addEventListener('click', () => { sounds.lampHum.play().catch(()=>{}); }, { once: true });
+    if (!switchHandleNode || !switchCordLine) return;
+    
+    // Play hum sound safely on interaction baseline
+    window.addEventListener('click', function() { 
+        audioTracks.lampHum.play().catch(function() {}); 
+    }, { once: true });
+    window.addEventListener('touchstart', function() { 
+        audioTracks.lampHum.play().catch(function() {}); 
+    }, { once: true });
 
-    let isDragging = false;
-    let startY = 0;
+    var trackingActiveDrag = false;
+    var physicalStartY = 0;
 
-    const startDrag = (e) => {
-        isDragging = true;
-        startY = e.clientY || (e.touches && e.touches[0].clientY);
-        switchNode.style.transition = "none";
-        switchLine.style.transition = "none";
-    };
+    // Unified helper for extraction touch coordinates or mouse clicks
+    function getClientY(e) {
+        if (e.touches && e.touches.length > 0) {
+            return e.touches.clientY;
+        }
+        return e.clientY;
+    }
 
-    const doDrag = (e) => {
-        if (!isDragging) return;
-        if (e.cancelable) e.preventDefault(); // Stops mobile screen from breaking
+    function startDrag(e) {
+        trackingActiveDrag = true;
+        physicalStartY = getClientY(e);
+        switchHandleNode.style.transition = "none";
+        switchCordLine.style.transition = "none";
+    }
 
-        const currentY = e.clientY || (e.touches && e.touches[0].clientY);
-        let deltaY = currentY - startY;
+    function doDrag(e) {
+        if (!trackingActiveDrag) return;
+        
+        // CRITICAL FOR MOBILE: Block physical mobile display pulling/scrolling
+        if (e.cancelable) {
+            e.preventDefault();
+        }
 
-        if (deltaY < 0) deltaY = 0;
-        if (deltaY > 45) deltaY = 45; // Move limit
+        var dynamicCurrentY = getClientY(e);
+        var dynamicDeltaY = dynamicCurrentY - physicalStartY;
 
-        switchNode.style.transform = `translateY(${deltaY}px)`;
-        switchLine.style.height = (70 + deltaY) + "px";
+        if (dynamicDeltaY < 0) dynamicDeltaY = 0;
+        if (dynamicDeltaY > 45) dynamicDeltaY = 45;
 
-        if (deltaY >= 45) {
-            isDragging = false;
-            sounds.lampHum.pause();
-            sounds.switchClick.play().catch(()=>{});
-            sounds.powerUp.play().catch(()=>{});
-            bulb.classList.add("powered");
-            hint.innerText = "⚡ System Active";
+        switchHandleNode.style.transform = "translateY(" + dynamicDeltaY + "px)";
+        switchCordLine.style.height = (70 + dynamicDeltaY) + "px";
 
-            setTimeout(() => { 
-                splash.classList.add("system-ready");
-                sounds.authAmbient.play().catch(()=>{});
+        if (dynamicDeltaY >= 45) {
+            trackingActiveDrag = false;
+            audioTracks.lampHum.pause();
+            audioTracks.switchClick.play().catch(function() {});
+            audioTracks.powerUp.play().catch(function() {});
+            if (lightBulbNode) lightBulbNode.classList.add("powered");
+            if (actionableHintNode) actionableHintNode.innerText = "⚡ System Active";
+
+            setTimeout(function() { 
+                if (splashOverlayNode) splashOverlayNode.style.display = "none";
+                audioTracks.authAmbient.play().catch(function() {});
             }, 600);
         }
-    };
+    }
 
-    const stopDrag = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        switchNode.style.transition = "transform 0.3s ease";
-        switchLine.style.transition = "height 0.3s ease";
-        switchNode.style.transform = "translateY(0px)";
-        switchLine.style.height = "70px";
-    };
+    function cancelDrag() {
+        if (!trackingActiveDrag) return;
+        trackingActiveDrag = false;
+        switchHandleNode.style.transition = "transform 0.3s ease";
+        switchCordLine.style.transition = "height 0.3s ease";
+        switchHandleNode.style.transform = "translateY(0px)";
+        switchCordLine.style.height = "70px";
+    }
 
-    switchNode.addEventListener("mousedown", startDrag);
+    // Laptop Mouse Bindings
+    switchHandleNode.addEventListener("mousedown", startDrag);
     window.addEventListener("mousemove", doDrag);
-    window.addEventListener("mouseup", stopDrag);
-    switchNode.addEventListener("touchstart", startDrag, { passive: false });
+    window.addEventListener("mouseup", cancelDrag);
+
+    // Mobile Phone Screen Touch Event Bindings (Strict non-passive settings rule)
+    switchHandleNode.addEventListener("touchstart", startDrag, { passive: false });
     window.addEventListener("touchmove", doDrag, { passive: false });
-    window.addEventListener("touchend", stopDrag);
+    window.addEventListener("touchend", cancelDrag, { passive: false });
 }
 
-// 4. FORGOT PASSWORD TOGGLE VISIBILITY
-function initForgotPasswordViews() {
-    const loginView = document.getElementById("loginView");
-    const resetView = document.getElementById("resetView");
-    const forgotLink = document.getElementById("forgotPasswordLink");
-    const backLink = document.getElementById("backToLoginLink");
-    const resetForm = document.getElementById("forgotPasswordForm");
-    const loginEmailField = document.getElementById("loginEmail");
+/* ==========================================================================
+   GATEWAY SWITCHES & AUTH FLOW MANAGERS
+   ========================================================================== */
+function initGatewayAuthenticationSystems() {
+    var loginView = document.getElementById("loginView");
+    var registerView = document.getElementById("registerView");
+    var toggleToRegisterLink = document.querySelector("a[href='#register']") || document.getElementById("forgotPasswordLink");
 
-    const savedEmail = localStorage.getItem("savedRememberEmail");
-    if (savedEmail && loginEmailField) {
-        loginEmailField.value = savedEmail;
-        if (document.getElementById("rememberMeLogin")) document.getElementById("rememberMeLogin").checked = true;
+    if (toggleToRegisterLink) {
+        toggleToRegisterLink.addEventListener("click", function(e) {
+            e.preventDefault();
+            if(loginView) loginView.style.display = "none";
+            if(registerView) registerView.style.display = "block";
+        });
     }
 
-    forgotLink.addEventListener("click", function(e) {
-        e.preventDefault();
-        loginView.style.display = "none";
-        resetView.style.display = "block";
-    });
+    var registrationFormNode = document.getElementById("registerForm");
+    if (registrationFormNode) {
+        registrationFormNode.addEventListener("submit", function(e) {
+            e.preventDefault();
+            var accountName = document.getElementById("regName").value;
+            var accountEmail = document.getElementById("regEmail").value.trim();
+            var accountPassword = document.getElementById("regPassword").value;
 
-    backLink.addEventListener("click", function(e) {
-        e.preventDefault();
-        resetView.style.display = "none";
-        loginView.style.display = "block";
-    });
-
-    resetForm.addEventListener("submit", function(e) {
-        e.preventDefault();
-        const email = document.getElementById("resetEmail").value;
-        const newPass = document.getElementById("newPassword").value;
-
-        let userDb = JSON.parse(localStorage.getItem("internspaceUsers")) || [];
-        let userIndex = userDb.findIndex(user => user.email === email);
-
-        if (userIndex !== -1) {
-            userDb[userIndex].password = newPass;
-            localStorage.setItem("internspaceUsers", JSON.stringify(userDb));
-            alert("Password Reset Successful! Try logging in now.");
-            resetForm.reset();
-            backLink.click();
-        } else {
-            alert("Email not found in our system!");
-        }
-    });
-}
-
-// 5. REGISTRATION FUNCTION
-function initRegisterLogic() {
-    const regEmailField = document.getElementById("regEmail");
-    const savedEmail = localStorage.getItem("savedRememberEmail");
-    if (savedEmail && regEmailField) {
-        regEmailField.value = savedEmail;
-        if (document.getElementById("rememberMeReg")) document.getElementById("rememberMeReg").checked = true;
-    }
-
-    document.getElementById("registerForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-        const name = document.getElementById("regName").value;
-        const email = regEmailField.value;
-        const password = document.getElementById("regPassword").value;
-        const rememberChecked = document.getElementById("rememberMeReg").checked;
-
-        let userDb = JSON.parse(localStorage.getItem("internspaceUsers")) || [];
-        if (userDb.some(u => u.email === email)) {
-            alert("Email already registered!");
-            return;
-        }
-
-        userDb.push({ name, email, password });
-        localStorage.setItem("internspaceUsers", JSON.stringify(userDb));
-
-        if (rememberChecked) {
-            localStorage.setItem("savedRememberEmail", email);
-        } else {
-            localStorage.removeItem("savedRememberEmail");
-        }
-
-        alert("Account Created! Redirecting to login.");
-        window.location.href = "index.html";
-    });
-}
-
-// 6. LOGIN FUNCTION
-function initLoginLogic() {
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-        const email = document.getElementById("loginEmail").value;
-        const password = document.getElementById("loginPassword").value;
-        const rememberChecked = document.getElementById("rememberMeLogin").checked;
-        const errBox = document.getElementById("loginError");
-
-        let userDb = JSON.parse(localStorage.getItem("internspaceUsers")) || [];
-        const foundUser = userDb.find(u => u.email === email && u.password === password);
-
-        if (foundUser) {
-            sounds.authAmbient.pause();
-            localStorage.setItem("loggedInUser", foundUser.name);
-
-            if (rememberChecked) {
-                localStorage.setItem("savedRememberEmail", email);
-            } else {
-                localStorage.removeItem("savedRememberEmail");
+            var emailCryptoMaskMatcher = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailCryptoMaskMatcher.test(accountEmail)) {
+                alert("Security alert: Please key in a valid email (e.g. user@domain.com).");
+                return;
             }
 
-            window.location.href = "dashboard.html";
-        } else {
-            errBox.style.display = "block";
-        }
-    });
+            var interactiveUserRegistry = JSON.parse(localStorage.getItem("internspaceUsers")) || [];
+            if (interactiveUserRegistry.some(function(u) { return u.email === accountEmail; })) {
+                alert("Email address already stored inside registry system.");
+                return;
+            }
+
+            interactiveUserRegistry.push({ name: accountName, email: accountEmail, password: accountPassword });
+            localStorage.setItem("internspaceUsers", JSON.stringify(interactiveUserRegistry));
+
+            alert("Security Profile Created! Transitioning straight to log in fields.");
+            if(registerView) registerView.style.display = "none";
+            if(loginView) loginView.style.display = "block";
+        });
+    }
+
+    var loginFormNode = document.getElementById("loginForm");
+    if (loginFormNode) {
+        loginFormNode.addEventListener("submit", function(e) {
+            e.preventDefault();
+            var emailInput = document.getElementById("loginEmail").value.trim();
+            var passwordInput = document.getElementById("loginPassword").value;
+            var errDisplay = document.getElementById("loginError");
+
+            var interactiveUserRegistry = JSON.parse(localStorage.getItem("internspaceUsers")) || [];
+            var matchedUser = interactiveUserRegistry.find(function(u) { return u.email === emailInput && u.password === passwordInput; });
+
+            if (matchedUser) {
+                audioTracks.authAmbient.pause();
+                localStorage.setItem("loggedInUser", matchedUser.name);
+                window.location.href = "./dashboard.html";
+            } else {
+                if (errDisplay) errDisplay.style.display = "block";
+            }
+        });
+    }
+    
+    var splashScreen = document.getElementById("splashScreen");
+    if (splashScreen && !localStorage.getItem("loggedInUser")) {
+        initSplashSequence();
+    }
 }
 
-// 7. DASHBOARD LOGIC
-function initDashboardHub(userName) {
-    document.getElementById("userGreeting").innerText = userName;
-    const checkboxes = document.querySelectorAll(".onboard-check");
-    let progressKey = "onboard_" + userName;
-    let localMemoryState = JSON.parse(localStorage.getItem(progressKey)) || {};
+/* ==========================================================================
+   ONBOARDING PROGRESS TRACKER
+   ========================================================================== */
+function processMetrics(elements) {
+    var positiveCalculatedTotalCounter = 0;
+    elements.forEach(function(item) { if (item.checked) positiveCalculatedTotalCounter++; });
+    var normalizedMetricsPercentageRatio = elements.length > 0 ? Math.round((positiveCalculatedTotalCounter / elements.length) * 100) : 0;
+    
+    var dynamicStatusBarNode = document.getElementById("onboardingProgress");
+    var dynamicStatusTextFieldNode = document.getElementById("progressText");
+    if (dynamicStatusBarNode) dynamicStatusBarNode.style.width = normalizedMetricsPercentageRatio + "%";
+    if (dynamicStatusTextFieldNode) dynamicStatusTextFieldNode.innerText = normalizedMetricsPercentageRatio + "% Clearance Achieved";
+}
 
-    checkboxes.forEach(box => {
-        const id = box.getAttribute("data-id");
-if (localMemoryState[id]) box.checked = true;box.addEventListener("change", function() {localMemoryState[id] = this.checked;localStorage.setItem(progressKey, JSON.stringify(localMemoryState));processMetrics(checkboxes);});});processMetrics(checkboxes);}function processMetrics(elements) {let checkedTotal = 0;elements.forEach(item => { if (item.checked) checkedTotal++; });const calculatedRatio = elements.length > 0 ? Math.round((checkedTotal / elements.length) * 100) : 0;document.getElementById("onboardingProgress").style.width = calculatedRatio + "%";document.getElementById("progressText").innerText = calculatedRatio + "% Clearance Achieved";}// 8. KANBAN TASK ENGINEfunction initKanbanSystem() {const kanbanForm = document.getElementById("kanbanForm");kanbanForm.addEventListener("submit", function(e) {e.preventDefault();const title = document.getElementById("taskTitle").value;const priority = document.getElementById("taskPriority").value;const id = "sprint_" + Date.now();const taskItem = { id, title, priority, status: "todo", owner: localStorage.getItem("loggedInUser") };let taskStack = JSON.parse(localStorage.getItem("globalKanbanData")) || [];taskStack.push(taskItem);localStorage.setItem("globalKanbanData", JSON.stringify(taskStack));kanbanForm.reset();refreshKanbanBoard();});refreshKanbanBoard();}function refreshKanbanBoard() {const todoBox = document.getElementById("todoContainer");const doingBox = document.getElementById("doingContainer");const doneBox = document.getElementById("doneContainer");if (!todoBox || !doingBox || !doneBox) return;todoBox.innerHTML = ""; doingBox.innerHTML = ""; doneBox.innerHTML = "";const activeUser = localStorage.getItem("loggedInUser");let masterList = JSON.parse(localStorage.getItem("globalKanbanData")) || [];let myTasks = masterList.filter(t => t && t.owner === activeUser);myTasks.forEach(task => {const card = document.createElement("div");card.className = "task-card";card.innerHTML = <h4>${task.title}</h4> <span class="priority-tag tag-${task.priority}">${task.priority}</span> <div class="kanban-actions"> ${task.status !== 'todo' ?◀: ''} ${task.status !== 'done' ?▶: ''} <button class="btn-action btn-delete" onclick="dropTaskItem('${task.id}')">🗑</button> </div>;if (task.status === "todo") todoBox.appendChild(card);if (task.status === "doing") doingBox.appendChild(card);if (task.status === "done") doneBox.appendChild(card);});}window.mutateTaskState = function(taskId, dir) {let db = JSON.parse(localStorage.getItem("globalKanbanData")) || [];const steps = ["todo", "doing", "done"];db = db.map(t => {if (t && t.id === taskId) {let p = steps.indexOf(t.status);if (dir === "progress" && p < 2) p++;if (dir === "regress" && p > 0) p--;t.status = steps[p];}return t;});localStorage.setItem("globalKanbanData", JSON.stringify(db));refreshKanbanBoard();};window.dropTaskItem = function(taskId) {let db = JSON.parse(localStorage.getItem("globalKanbanData")) || [];db = db.filter(item => item && item.id !== taskId);localStorage.setItem("globalKanbanData", JSON.stringify(db));refreshKanbanBoard();};// 9. SERVICE WORKER REGISTRATION (OFFLINE SUPPORT)if ('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('./sw.js').catch(()=>{});});}window.addEventListener('beforeinstallprompt', (e) => {e.preventDefault(); deferredPrompt = e;});window.triggerPWAInstall = function() {if (!deferredPrompt) {alert('To install: Open your phone browser settings menu and click "Add to Home Screen"');return;}deferredPrompt.prompt();};
+function initDashboardHub(userName) {
+    var dynamicGreetingFieldNode = document.getElementById("userGreeting");
+    if (dynamicGreetingFieldNode) dynamicGreetingFieldNode.innerText = userName || "Intern";
+    
+    var diagnosticProgressCheckboxesList = document.querySelectorAll(".onboard-check");
+    var personalProgressKeyIdentifier = "onboard_" + userName;
+    var dynamicLocalMetricsStateMap = JSON.parse(localStorage.getItem(personalProgressKeyIdentifier)) || {};
+
+    diagnosticProgressCheckboxesList.forEach(function(box) {
+        var metricUniqueId = box.getAttribute("data-id");
+        if (dynamicLocalMetricsStateMap[metricUniqueId]) box.checked = true;
+
+        box.addEventListener("change", function() {
+            dynamicLocalMetricsStateMap[metricUniqueId] = this.checked;
+            localStorage.setItem(personalProgressKeyIdentifier, JSON.stringify(dynamicLocalMetricsStateMap));
+processMetrics(diagnosticProgressCheckboxesList);});});processMetrics(diagnosticProgressCheckboxesList);}/* ==========================================================================AGILE SPRINT KANBAN COMPONENT========================================================================== */function refreshKanbanBoard() {var targetTodoContainerNode = document.getElementById("todoContainer");var targetDoingContainerNode = document.getElementById("doingContainer");var targetDoneContainerNode = document.getElementById("doneContainer");if (!targetTodoContainerNode || !targetDoingContainerNode || !targetDoneContainerNode) return;targetTodoContainerNode.innerHTML = ""; targetDoingContainerNode.innerHTML = ""; targetDoneContainerNode.innerHTML = "";var currentActiveUserIdentifier = localStorage.getItem("loggedInUser");var globalKanbanMemoryArray = JSON.parse(localStorage.getItem("globalKanbanData")) || [];var userspaceFilteredTasksList = globalKanbanMemoryArray.filter(function(t) { return t && t.owner === currentActiveUserIdentifier; });userspaceFilteredTasksList.forEach(function(task) {var generatedTaskCardElement = document.createElement("div");generatedTaskCardElement.className = "task-card";var renderLeft = task.status !== 'todo' ? '◀ Move Left' : '';var renderRight = task.status !== 'done' ? 'Move Right ▶' : '';generatedTaskCardElement.innerHTML = '' + task.title + '' +'' + task.priority + ' Priority' +'' +renderLeft + renderRight +'🗑 Clear' +'';if (task.status === "todo") targetTodoContainerNode.appendChild(generatedTaskCardElement);if (task.status === "doing") targetDoingContainerNode.appendChild(generatedTaskCardElement);if (task.status === "done") targetDoneContainerNode.appendChild(generatedTaskCardElement);});}function initKanbanSystem() {var corporateKanbanSubmissionFormNode = document.getElementById("kanbanForm");if (!corporateKanbanSubmissionFormNode) return;var newFormClone = corporateKanbanSubmissionFormNode.cloneNode(true);corporateKanbanSubmissionFormNode.parentNode.replaceChild(newFormClone, corporateKanbanSubmissionFormNode);newFormClone.addEventListener("submit", function(e) {e.preventDefault();var titleField = document.getElementById("taskTitle");var priorityField = document.getElementById("taskPriority");if (!titleField || !priorityField) return;var dynamicTaskTitleString = titleField.value;var dynamicTaskPriorityLevelString = priorityField.value;var dynamicTaskGeneratedUniqueId = "sprint_" + Date.now();var freshSprintTaskItemObject = { id: dynamicTaskGeneratedUniqueId, title: dynamicTaskTitleString, priority: dynamicTaskPriorityLevelString, status: "todo", owner: localStorage.getItem("loggedInUser") };var globalKanbanMemoryArray = JSON.parse(localStorage.getItem("globalKanbanData")) || [];globalKanbanMemoryArray.push(freshSprintTaskItemObject);localStorage.setItem("globalKanbanData", JSON.stringify(globalKanbanMemoryArray));newFormClone.reset();refreshKanbanBoard();});refreshKanbanBoard();}/* ==========================================================================CENTRAL LIFE CYCLE ROUTER ENGINES========================================================================== */document.addEventListener("DOMContentLoaded", function() {var authenticatedUser = localStorage.getItem("loggedInUser");var checkGatewayLoginPage = document.getElementById("loginForm") !== null;var checkInternalDashboardPage = document.getElementById("onboardingProgress") !== null;if (!authenticatedUser && checkInternalDashboardPage) {window.location.href = "./index.html";return;}if (authenticatedUser && checkGatewayLoginPage) {window.location.href = "./dashboard.html";return;}if (checkGatewayLoginPage) {window.addEventListener('click', function() {if (audioTracks.authAmbient.paused && audioTracks.workspaceBeat.paused) {audioTracks.authAmbient.play().catch(function() {});}}, { once: true });initGatewayAuthenticationSystems();} else if (checkInternalDashboardPage) {if (audioTracks.workspaceBeat.paused) {audioTracks.authAmbient.pause();audioTracks.workspaceBeat.play().catch(function() {window.addEventListener('click', function() {if(audioTracks.workspaceBeat.paused) audioTracks.workspaceBeat.play().catch(function() {});}, { once: true });});}initDashboardHub(authenticatedUser);initKanbanSystem();}var logoutButton = document.getElementById("logoutBtn");if (logoutButton) {logoutButton.addEventListener("click", function(e) {e.preventDefault();audioTracks.workspaceBeat.pause();audioTracks.authAmbient.pause();localStorage.removeItem("loggedInUser");window.location.href = "./index.html";});}});// String key global frame injection matching strict linters cleanlyif (typeof window !== "undefined") {window["switchWorkspaceView"] = function(targetViewString) {var onboardingPanel = document.getElementById("onboardingSection");var kanbanPanel = document.getElementById("kanbanSection");if (!onboardingPanel || !kanbanPanel) return;if (targetViewString === 'onboarding') {kanbanPanel.style.display = "none";onboardingPanel.style.display = "block";} else if (targetViewString === 'kanban') {onboardingPanel.style.display = "none";kanbanPanel.style.display = "block";refreshKanbanBoard();}};window["executeTaskWorkflowMutation"] = function(taskId, workflowDirectionString) {var globalKanbanMemoryArray = JSON.parse(localStorage.getItem("globalKanbanData")) || [];var workflowStagesMapSequence = ["todo", "doing", "done"];globalKanbanMemoryArray = globalKanbanMemoryArray.map(function(t) {if (t && t.id === taskId) {var currentStagePointerIndex = workflowStagesMapSequence.indexOf(t.status);if (workflowDirectionString === "progress" && currentStagePointerIndex < 2) currentStagePointerIndex++;if (workflowDirectionString === "regress" && currentStagePointerIndex > 0) currentStagePointerIndex--;t.status = workflowStagesMapSequence[currentStagePointerIndex];}return t;});localStorage.setItem("globalKanbanData", JSON.stringify(globalKanbanMemoryArray));refreshKanbanBoard();};window["removeTaskItemFromMemoryStorage"] = function(taskId) {var globalKanbanMemoryArray = JSON.parse(localStorage.getItem("globalKanbanData")) || [];globalKanbanMemoryArray = globalKanbanMemoryArray.filter(function(item) { return item && item.id !== taskId; });localStorage.setItem("globalKanbanData", JSON.stringify(globalKanbanMemoryArray));refreshKanbanBoard();};}if ('serviceWorker' in navigator) {window.addEventListener('load', function() {navigator.serviceWorker.register('./sw.js').catch(function() {});});}
